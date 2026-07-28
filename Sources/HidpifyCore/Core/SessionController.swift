@@ -30,7 +30,19 @@ public final class SessionController {
         /// resolution (DESIGN.md §9.2 step 3), restored on `disable(matcher:)`.
         /// `nil` for mirror sessions, which never change the physical mode.
         public let restorePhysicalMode: CGDisplayMode?
+        /// When this session was established. `reapply` won't tear a session
+        /// down and recreate it within `reapplyCooldown` of this, even if the
+        /// mirror/stream state momentarily looks wrong — during wake from sleep
+        /// the display reconfiguration events arrive in a burst before macOS has
+        /// settled, and re-enabling on that stale state makes the screen flap.
+        public let enabledAt: Date
     }
+
+    /// Grace period after establishing a session during which `reapply` trusts
+    /// it rather than tearing it down — long enough to cover a sleep/wake
+    /// display-reconfiguration burst. A genuinely broken session self-heals on
+    /// the first reapply after this window.
+    private static let reapplyCooldown: TimeInterval = 8.0
 
     public private(set) var sessions: [ActiveSession] = []
 
@@ -124,7 +136,8 @@ public final class SessionController {
                     stream: nil,
                     restoreOrigin: nil,
                     colorRestore: nil,
-                    restorePhysicalMode: nil
+                    restorePhysicalMode: nil,
+                    enabledAt: Date()
                 )
 
             case .stream:
@@ -213,7 +226,8 @@ public final class SessionController {
                     stream: stream,
                     restoreOrigin: (id: physical.id, origin: physicalOrigin),
                     colorRestore: colorRestore,
-                    restorePhysicalMode: restorePhysicalMode
+                    restorePhysicalMode: restorePhysicalMode,
+                    enabledAt: Date()
                 )
             }
 
@@ -333,15 +347,20 @@ public final class SessionController {
             }
 
             if let session = sessions.first(where: { $0.config.matcher == config.matcher }) {
+                // Don't thrash a session we just established (wake-from-sleep
+                // reconfiguration burst): trust it for a grace period even if
+                // the mirror/stream state momentarily reads wrong.
+                let recentlyEnabled =
+                    Date().timeIntervalSince(session.enabledAt) < Self.reapplyCooldown
                 switch session.mode {
                 case .mirror:
-                    if physical.mirrorsDisplayID == session.handle.displayID {
+                    if recentlyEnabled || physical.mirrorsDisplayID == session.handle.displayID {
                         continue
                     }
                 case .stream:
                     let virtualOnline = DisplayEnumerator.onlineDisplays()
                         .contains { $0.id == session.handle.displayID }
-                    if virtualOnline {
+                    if recentlyEnabled || virtualOnline {
                         continue
                     }
                 }

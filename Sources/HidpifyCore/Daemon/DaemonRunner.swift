@@ -62,7 +62,10 @@ public final class DaemonRunner {
             queue: .main
         ) { [logger] _ in
             logger.info("screensDidWake — scheduling reapply")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            // Give the displays time to finish coming back before the first
+            // reapply; the reapply cooldown then absorbs the reconfiguration
+            // burst that follows (SessionController.reapplyCooldown).
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                 SessionController.shared.reapply(configs: ConfigStore.load().targets)
             }
         }
