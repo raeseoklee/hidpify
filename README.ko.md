@@ -54,10 +54,9 @@ CLI/데몬 바이너리는 **반드시 `Scripts/install-cli.sh`로 설치**하�
 
 ## Menu Bar App (optional)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/images/popover-dark.png">
-  <img src="./docs/images/popover-light.png" alt="hidpify 메뉴바 팝오버" width="360">
-</picture>
+| 라이트 | 다크 |
+|:---:|:---:|
+| <img src="./docs/images/popover-light.png" alt="hidpify 메뉴바 팝오버 (라이트)" width="320"> | <img src="./docs/images/popover-dark.png" alt="hidpify 메뉴바 팝오버 (다크)" width="320"> |
 
 `Scripts/make-app.sh`를 실행하면 `swift build -c release` 후 `dist/Hidpify.app`이 만들어집니다(ad-hoc 서명 포함). 이 앱을 `/Applications`로 복사해 실행하면 됩니다. 메뉴바 팝오버에서 연결된 디스플레이별 HiDPI 토글, "looks like" 해상도 선택(밀도 일치 제안 포함), 데몬 상태 확인, Start at Login을 관리할 수 있습니다. 앱은 순수 프론트엔드로, 가상 디스플레이 생성/미러링은 여전히 `hidpify` 데몬이 전담합니다(DESIGN.ko.md §8.1).
 

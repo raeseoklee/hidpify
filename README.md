@@ -54,10 +54,9 @@ If `--display` is omitted, hidpify automatically finds a physical display that i
 
 ## Menu Bar App (optional)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/images/popover-dark.png">
-  <img src="./docs/images/popover-light.png" alt="hidpify menu bar popover" width="360">
-</picture>
+| Light | Dark |
+|:---:|:---:|
+| <img src="./docs/images/popover-light.png" alt="hidpify menu bar popover (light)" width="320"> | <img src="./docs/images/popover-dark.png" alt="hidpify menu bar popover (dark)" width="320"> |
 
 Running `Scripts/make-app.sh` builds via `swift build -c release` and produces `dist/Hidpify.app` (ad-hoc signed). Copy this app to `/Applications` and launch it. From the menu bar popover you can toggle HiDPI per connected display, pick a "looks like" resolution (with density-matching suggestions), check daemon status, and manage Start at Login. The app is a pure frontend — creating the virtual display and mirroring is still handled entirely by the `hidpify` daemon (see DESIGN.md §8.1).
 
