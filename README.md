@@ -21,7 +21,13 @@ Requires the Swift toolchain (`xcode-select --install`); everything builds from 
 brew install --cask raeseoklee/tap/hidpify
 ```
 
-On first launch macOS Gatekeeper blocks the app — it uses a private API and can't be notarized. Right-click **Hidpify.app → Open** once, or clear the flag: `xattr -dr com.apple.quarantine /Applications/Hidpify.app`.
+On first launch macOS Gatekeeper blocks the app because it isn't notarized (it's ad-hoc signed). To allow it, run this once in Terminal:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/Hidpify.app
+```
+
+(On macOS 15 Sequoia the old right-click → Open trick no longer works; alternatively, double-click the app once, then go to **System Settings → Privacy & Security** and click **Open Anyway**.)
 
 **CLI only** — any of:
 
