@@ -18,5 +18,9 @@ let package = Package(
                 .linkedFramework("ColorSync"),
             ]
         ),
+        .executableTarget(
+            name: "hidpify",
+            dependencies: ["HidpifyCore"]
+        ),
     ]
 )
