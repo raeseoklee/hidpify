@@ -13,20 +13,25 @@ macOS에서 HiDPI 모드를 제공하지 않는 외장 모니터에 HiDPI 렌더
 
 ## 빌드 · 설치
 
-한 줄로 설치 (소스에서 빌드 — Swift 툴체인 필요, `xcode-select --install`):
+Swift 툴체인 필요(`xcode-select --install`); 모두 소스에서 빌드됩니다.
+
+**메뉴바 앱 + CLI (권장)** — 한 명령으로 Hidpify 메뉴바 앱과 그 앱이 의존하는 CLI/데몬을 함께 설치합니다:
 
 ```sh
-# Homebrew (권장):
-brew install raeseoklee/tap/hidpify
-
-# 또는 curl | bash:
-curl -fsSL https://raw.githubusercontent.com/raeseoklee/hidpify/main/install.sh | bash
-
-# 또는 로컬 클론에서:
-git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh
+brew install --cask raeseoklee/tap/hidpify
 ```
 
-`install.sh`는 `hidpify`를 빌드해 재서명된 바이너리를 `~/.local/bin`에 설치합니다(`PREFIX=`로 위치 변경, `WITH_AGENT=1`이면 로그인 시 데몬 자동 실행 LaunchAgent도 설치).
+앱은 private API를 써서 공증(notarize)이 불가하므로, **첫 실행 시 macOS Gatekeeper가 막습니다.** `Hidpify.app`을 **우클릭 → 열기**를 한 번 하거나, 격리를 제거하세요: `xattr -dr com.apple.quarantine /Applications/Hidpify.app`.
+
+**CLI만** — 아래 중 아무거나:
+
+```sh
+brew install raeseoklee/tap/hidpify                                                       # Homebrew
+curl -fsSL https://raw.githubusercontent.com/raeseoklee/hidpify/main/install.sh | bash    # curl | bash
+git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh          # 클론에서
+```
+
+`install.sh`는 재서명된 `hidpify` 바이너리를 `~/.local/bin`에 설치합니다(`PREFIX=`로 위치 변경, `WITH_AGENT=1`이면 로그인 LaunchAgent도 설치).
 
 또는 수동 빌드/설치:
 

@@ -13,20 +13,25 @@ A CLI + resident daemon that forces HiDPI rendering onto external monitors on ma
 
 ## Build & Install
 
-Install with one command (builds from source — requires the Swift toolchain, `xcode-select --install`):
+Requires the Swift toolchain (`xcode-select --install`); everything builds from source.
+
+**Menu bar app + CLI (recommended)** — one command installs the Hidpify menu bar app *and* the CLI/daemon it depends on:
 
 ```sh
-# Homebrew (recommended):
-brew install raeseoklee/tap/hidpify
-
-# or curl | bash:
-curl -fsSL https://raw.githubusercontent.com/raeseoklee/hidpify/main/install.sh | bash
-
-# or from a local clone:
-git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh
+brew install --cask raeseoklee/tap/hidpify
 ```
 
-`install.sh` builds `hidpify` and installs the re-signed binary to `~/.local/bin` (override with `PREFIX=`; set `WITH_AGENT=1` to also install the LaunchAgent that auto-runs the daemon at login).
+On first launch macOS Gatekeeper blocks the app — it uses a private API and can't be notarized. Right-click **Hidpify.app → Open** once, or clear the flag: `xattr -dr com.apple.quarantine /Applications/Hidpify.app`.
+
+**CLI only** — any of:
+
+```sh
+brew install raeseoklee/tap/hidpify                                                       # Homebrew
+curl -fsSL https://raw.githubusercontent.com/raeseoklee/hidpify/main/install.sh | bash    # curl | bash
+git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh          # from a clone
+```
+
+`install.sh` installs the re-signed `hidpify` binary to `~/.local/bin` (override with `PREFIX=`; `WITH_AGENT=1` also installs the login LaunchAgent).
 
 Or build/install manually:
 
