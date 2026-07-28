@@ -8,12 +8,26 @@ macOS에서 HiDPI 모드를 제공하지 않는 외장 모니터에 HiDPI 렌더
 
 ## 빌드 · 설치
 
+한 줄로 설치 (소스에서 빌드 — Swift 툴체인 필요, `xcode-select --install`):
+
 ```sh
-swift build -c release          # 빌드만 (.build/release/hidpify)
-Scripts/install-cli.sh          # 빌드 + ~/.local/bin/hidpify 설치 (권장)
+# 로컬 클론에서 (저장소가 private인 동안에도 동작):
+git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh
+
+# 저장소가 public이 되면 동일 스크립트를 원라이너로:
+curl -fsSL https://raw.githubusercontent.com/raeseoklee/hidpify/main/install.sh | bash
 ```
 
-CLI/데몬 바이너리는 **반드시 `Scripts/install-cli.sh`로 설치**하세요. 이 스크립트는 복사 후 `codesign --force -s -`로 재서명합니다 — SPM의 linker 서명은 복사 시 무효화되어(`codesign --verify`는 통과하지만) launchd가 실행 시 "Invalid Signature"로 거부해 데몬이 크래시-재시작 루프에 빠지기 때문입니다. 맨 `cp`로 설치하면 데몬이 "꺼졌다 켜졌다" 합니다.
+`install.sh`는 `hidpify`를 빌드해 재서명된 바이너리를 `~/.local/bin`에 설치합니다(`PREFIX=`로 위치 변경, `WITH_AGENT=1`이면 로그인 시 데몬 자동 실행 LaunchAgent도 설치).
+
+또는 수동 빌드/설치:
+
+```sh
+swift build -c release          # 빌드만 (.build/release/hidpify)
+Scripts/install-cli.sh          # 빌드 + ~/.local/bin/hidpify 설치
+```
+
+CLI/데몬 바이너리를 **맨 `cp`로 설치하지 마세요.** `install.sh`와 `Scripts/install-cli.sh`는 복사 후 `codesign --force -s -`로 재서명합니다 — SPM의 linker 서명은 복사 시 무효화되어(`codesign --verify`는 통과하지만) launchd가 실행 시 "Invalid Signature"로 거부해 데몬이 크래시-재시작 루프에 빠지기 때문입니다.
 
 ## 명령어
 

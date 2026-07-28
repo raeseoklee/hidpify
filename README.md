@@ -8,12 +8,26 @@ A CLI + resident daemon that forces HiDPI rendering onto external monitors on ma
 
 ## Build & Install
 
+Install with one command (builds from source — requires the Swift toolchain, `xcode-select --install`):
+
 ```sh
-swift build -c release          # build only (.build/release/hidpify)
-Scripts/install-cli.sh          # build + install to ~/.local/bin/hidpify (recommended)
+# from a local clone (works while the repo is private):
+git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh
+
+# once the repo is public, the same script also works as a one-liner:
+curl -fsSL https://raw.githubusercontent.com/raeseoklee/hidpify/main/install.sh | bash
 ```
 
-**Always install the CLI/daemon binary via `Scripts/install-cli.sh`.** After copying the binary, the script re-signs it with `codesign --force -s -` — SPM's linker signature is invalidated on copy (it still passes `codesign --verify`, but launchd rejects it at launch with "Invalid Signature"), which sends the daemon into a crash-restart loop. Installing with a plain `cp` leaves the daemon flapping on and off.
+`install.sh` builds `hidpify` and installs the re-signed binary to `~/.local/bin` (override with `PREFIX=`; set `WITH_AGENT=1` to also install the LaunchAgent that auto-runs the daemon at login).
+
+Or build/install manually:
+
+```sh
+swift build -c release          # build only (.build/release/hidpify)
+Scripts/install-cli.sh          # build + install to ~/.local/bin/hidpify
+```
+
+**Never install the CLI/daemon binary with a plain `cp`.** `install.sh` and `Scripts/install-cli.sh` re-sign it with `codesign --force -s -` after copying — SPM's linker signature is invalidated on copy (it still passes `codesign --verify`, but launchd rejects it at launch with "Invalid Signature"), which sends the daemon into a crash-restart loop.
 
 ## Commands
 
