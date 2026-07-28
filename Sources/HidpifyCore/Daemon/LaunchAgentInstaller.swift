@@ -157,7 +157,13 @@ public enum LaunchAgentInstaller {
             let cwd = FileManager.default.currentDirectoryPath
             absolutePath = (cwd as NSString).appendingPathComponent(rawPath)
         }
-        return URL(fileURLWithPath: absolutePath).resolvingSymlinksInPath().path
+        // Deliberately do NOT resolve symlinks. When installed via Homebrew the
+        // invoked path is the stable symlink `<prefix>/bin/hidpify`; resolving it
+        // would bake in the version-specific Cellar path
+        // (`.../Cellar/hidpify/X.Y.Z/bin/hidpify`), which `brew cleanup` deletes
+        // on the next upgrade, breaking the daemon. Keeping the symlink path
+        // makes the LaunchAgent survive upgrades.
+        return absolutePath
     }
 
     private static func runLaunchctl(_ arguments: [String]) -> Int32 {
