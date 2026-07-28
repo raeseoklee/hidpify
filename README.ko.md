@@ -4,6 +4,11 @@
 
 # hidpify
 
+[![Release](https://img.shields.io/github/v/release/raeseoklee/hidpify)](https://github.com/raeseoklee/hidpify/releases)
+[![License](https://img.shields.io/github/license/raeseoklee/hidpify)](./LICENSE)
+![Platform](https://img.shields.io/badge/platform-macOS%20·%20Apple%20Silicon-black)
+[![Homebrew](https://img.shields.io/badge/homebrew-raeseoklee%2Ftap-orange)](https://github.com/raeseoklee/homebrew-tap)
+
 macOS에서 HiDPI 모드를 제공하지 않는 외장 모니터에 HiDPI 렌더링을 강제 적용하는 CLI + 상주 데몬입니다. 가상 디스플레이(`CGVirtualDisplay` private API)를 원하는 해상도·HiDPI로 만들고, 그 내용을 실제 모니터에 하드웨어 미러링해서 Apple Silicon(M4 등)의 DCP 물리 파이프 제약을 우회합니다. 설계 배경과 근거는 [DESIGN.ko.md](./DESIGN.ko.md)를 참고하세요.
 
 ## 빌드 · 설치
@@ -11,11 +16,14 @@ macOS에서 HiDPI 모드를 제공하지 않는 외장 모니터에 HiDPI 렌더
 한 줄로 설치 (소스에서 빌드 — Swift 툴체인 필요, `xcode-select --install`):
 
 ```sh
-# 로컬 클론에서 (저장소가 private인 동안에도 동작):
-git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh
+# Homebrew (권장):
+brew install raeseoklee/tap/hidpify
 
-# 저장소가 public이 되면 동일 스크립트를 원라이너로:
+# 또는 curl | bash:
 curl -fsSL https://raw.githubusercontent.com/raeseoklee/hidpify/main/install.sh | bash
+
+# 또는 로컬 클론에서:
+git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh
 ```
 
 `install.sh`는 `hidpify`를 빌드해 재서명된 바이너리를 `~/.local/bin`에 설치합니다(`PREFIX=`로 위치 변경, `WITH_AGENT=1`이면 로그인 시 데몬 자동 실행 LaunchAgent도 설치).

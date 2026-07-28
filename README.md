@@ -4,6 +4,11 @@
 
 # hidpify
 
+[![Release](https://img.shields.io/github/v/release/raeseoklee/hidpify)](https://github.com/raeseoklee/hidpify/releases)
+[![License](https://img.shields.io/github/license/raeseoklee/hidpify)](./LICENSE)
+![Platform](https://img.shields.io/badge/platform-macOS%20·%20Apple%20Silicon-black)
+[![Homebrew](https://img.shields.io/badge/homebrew-raeseoklee%2Ftap-orange)](https://github.com/raeseoklee/homebrew-tap)
+
 A CLI + resident daemon that forces HiDPI rendering onto external monitors on macOS that don't natively offer a HiDPI mode. It creates a virtual display (via the `CGVirtualDisplay` private API) at the desired resolution and HiDPI, then hardware-mirrors its contents onto the actual monitor — working around the DCP physical-pipe constraints on Apple Silicon (M4, etc.). See [DESIGN.md](./DESIGN.md) for the design background and rationale.
 
 ## Build & Install
@@ -11,11 +16,14 @@ A CLI + resident daemon that forces HiDPI rendering onto external monitors on ma
 Install with one command (builds from source — requires the Swift toolchain, `xcode-select --install`):
 
 ```sh
-# from a local clone (works while the repo is private):
-git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh
+# Homebrew (recommended):
+brew install raeseoklee/tap/hidpify
 
-# once the repo is public, the same script also works as a one-liner:
+# or curl | bash:
 curl -fsSL https://raw.githubusercontent.com/raeseoklee/hidpify/main/install.sh | bash
+
+# or from a local clone:
+git clone https://github.com/raeseoklee/hidpify.git && cd hidpify && ./install.sh
 ```
 
 `install.sh` builds `hidpify` and installs the re-signed binary to `~/.local/bin` (override with `PREFIX=`; set `WITH_AGENT=1` to also install the LaunchAgent that auto-runs the daemon at login).
