@@ -1,0 +1,1569 @@
+{
+  "version": "2.14",
+  "children": [
+    {
+      "type": "frame",
+      "id": "Eyq8k",
+      "x": 40,
+      "y": 40,
+      "name": "Toggle",
+      "reusable": true,
+      "width": 36,
+      "height": 20,
+      "fill": "$accent",
+      "cornerRadius": 10,
+      "padding": 2,
+      "justifyContent": "end",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "t9R3d5",
+          "name": "Knob",
+          "fill": "#FFFFFF",
+          "width": 16,
+          "height": 16,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000033",
+            "offset": {
+              "x": 0,
+              "y": 1
+            },
+            "blur": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "KBTSw",
+      "x": 156,
+      "y": 40,
+      "name": "Popover",
+      "clip": true,
+      "width": 360,
+      "fill": "$bg",
+      "cornerRadius": 12,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#00000026",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 24
+      },
+      "layout": "vertical",
+      "gap": 10,
+      "padding": 14,
+      "children": [
+        {
+          "type": "frame",
+          "id": "R1314",
+          "name": "Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "P0OJM",
+              "name": "TitleRow",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "jhxU3",
+                  "name": "AppIcon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "monitor-up",
+                  "library": "lucide",
+                  "fill": "$accent"
+                },
+                {
+                  "type": "text",
+                  "id": "MWRuM",
+                  "name": "Title",
+                  "fill": "$text-primary",
+                  "content": "hidpify",
+                  "fontFamily": "$font",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "oTvST",
+              "name": "Status",
+              "gap": 5,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "t7y4Ef",
+                  "name": "Dot",
+                  "fill": "$green",
+                  "width": 7,
+                  "height": 7
+                },
+                {
+                  "type": "text",
+                  "id": "sH0Np",
+                  "name": "StatusLabel",
+                  "fill": "$text-secondary",
+                  "content": "Daemon running",
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VA53k",
+          "name": "DELL P2725QE (1) Card",
+          "width": "fill_container",
+          "fill": "$card",
+          "cornerRadius": 10,
+          "stroke": "$card-stroke",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "f7zSL",
+              "name": "Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "xg76G",
+                  "name": "NameGroup",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "h7EgR",
+                      "name": "Icon",
+                      "width": 15,
+                      "height": 15,
+                      "icon": "monitor",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "bOB9n",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "DELL P2725QE (1)",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "id": "i4vaQ",
+                  "type": "ref",
+                  "ref": "Eyq8k",
+                  "name": "Toggle",
+                  "fill": "$off-track",
+                  "justifyContent": "start"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nzoLF",
+              "name": "SubPad",
+              "padding": [
+                0,
+                0,
+                0,
+                23
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "I4qVes",
+                  "name": "Sub",
+                  "fill": "$text-secondary",
+                  "content": "2560 × 1440 @ 100 Hz · Native HiDPI ✓",
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "a5EBm",
+          "name": "DELL P2725QE (2) Card",
+          "width": "fill_container",
+          "fill": "$card",
+          "cornerRadius": 10,
+          "stroke": "$card-stroke",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "bIOiA",
+              "name": "Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "occGz",
+                  "name": "NameGroup",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "cW0RU",
+                      "name": "Icon",
+                      "width": 15,
+                      "height": 15,
+                      "icon": "monitor",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yg51o",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "DELL P2725QE (2)",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "id": "W7jBuN",
+                  "type": "ref",
+                  "ref": "Eyq8k",
+                  "name": "Toggle",
+                  "fill": "$off-track",
+                  "justifyContent": "start"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ZNvDt",
+              "name": "SubPad",
+              "padding": [
+                0,
+                0,
+                0,
+                23
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Kqvgf",
+                  "name": "Sub",
+                  "fill": "$text-secondary",
+                  "content": "2560 × 1440 @ 100 Hz · Native HiDPI ✓",
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "AagkU",
+          "name": "LG IPS QHD Card",
+          "width": "fill_container",
+          "fill": "$card",
+          "cornerRadius": 10,
+          "stroke": "$card-stroke",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "X9Dhi",
+              "name": "Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Xo0dc",
+                  "name": "NameGroup",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "q57LAm",
+                      "name": "Icon",
+                      "width": 15,
+                      "height": 15,
+                      "icon": "monitor",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "m3Psq3",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "LG IPS QHD",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "id": "kh2QN",
+                  "type": "ref",
+                  "ref": "Eyq8k",
+                  "name": "Toggle"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Pasko",
+              "name": "SubPad",
+              "padding": [
+                0,
+                0,
+                0,
+                23
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "GXKkt",
+                  "name": "Sub",
+                  "fill": "$text-secondary",
+                  "content": "1278 × 2272 @ 100 Hz · HiDPI via hidpify ✓ · Portrait",
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RreGW",
+              "name": "LooksLike",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "padding": [
+                8,
+                0,
+                0,
+                23
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "mTWop",
+                  "name": "PickerRow",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "oRz2l",
+                      "name": "PickerLabel",
+                      "fill": "$text-secondary",
+                      "content": "Looks like",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "s7JtD",
+                      "name": "Dropdown",
+                      "clip": true,
+                      "fill": "$control",
+                      "cornerRadius": 6,
+                      "stroke": "$control-stroke",
+                      "strokeWidth": 1,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ZsAzr",
+                          "name": "ValuePad",
+                          "padding": [
+                            4,
+                            8,
+                            4,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "RtYTY",
+                              "name": "Value",
+                              "fill": "$text-primary",
+                              "content": "1278 × 2272 (HiDPI)",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "EJtcg",
+                          "name": "ChevBox",
+                          "width": 18,
+                          "height": 23,
+                          "fill": "$accent",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "WuvT1",
+                              "name": "Chevrons",
+                              "width": 11,
+                              "height": 11,
+                              "icon": "chevrons-up-down",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TXzea",
+                  "name": "Caption",
+                  "gap": 5,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "zgt9E",
+                      "name": "CapIcon",
+                      "width": 11,
+                      "height": 11,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "$accent"
+                    },
+                    {
+                      "type": "text",
+                      "id": "oqucf",
+                      "name": "CapText",
+                      "fill": "$text-secondary",
+                      "content": "Matches DELL P2725QE density (108.6 PPI)",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "FUASI",
+          "name": "FooterDivider",
+          "fill": "$divider",
+          "width": "fill_container",
+          "height": 1
+        },
+        {
+          "type": "frame",
+          "id": "DfIZd",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "a4W4T",
+              "name": "LoginGroup",
+              "gap": 7,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "eyzGF",
+                  "name": "Checkbox",
+                  "width": 15,
+                  "height": 15,
+                  "fill": "$accent",
+                  "cornerRadius": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "taP3h",
+                      "name": "Check",
+                      "width": 10,
+                      "height": 10,
+                      "icon": "check",
+                      "library": "lucide",
+                      "fill": "#FFFFFF"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "R5uK8W",
+                  "name": "LoginLabel",
+                  "fill": "$text-primary",
+                  "content": "Start at Login",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nKoZZ",
+              "name": "QuitBtn",
+              "fill": "$off-track",
+              "cornerRadius": 6,
+              "padding": [
+                4,
+                10
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "MKdhD",
+                  "name": "QuitLabel",
+                  "fill": "$text-primary",
+                  "content": "Quit",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Nx4r7",
+      "x": 596,
+      "y": 40,
+      "name": "Popover Dark",
+      "theme": {
+        "mode": "dark"
+      },
+      "clip": true,
+      "width": 360,
+      "fill": "$bg",
+      "cornerRadius": 12,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#00000026",
+        "offset": {
+          "x": 0,
+          "y": 8
+        },
+        "blur": 24
+      },
+      "layout": "vertical",
+      "gap": 10,
+      "padding": 14,
+      "children": [
+        {
+          "type": "frame",
+          "id": "SgYb6",
+          "name": "Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "xHDPu",
+              "name": "TitleRow",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "CfZBU",
+                  "name": "AppIcon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "monitor-up",
+                  "library": "lucide",
+                  "fill": "$accent"
+                },
+                {
+                  "type": "text",
+                  "id": "PtzPE",
+                  "name": "Title",
+                  "fill": "$text-primary",
+                  "content": "hidpify",
+                  "fontFamily": "$font",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "D17BV1",
+              "name": "Status",
+              "gap": 5,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "FE5ST",
+                  "name": "Dot",
+                  "fill": "$green",
+                  "width": 7,
+                  "height": 7
+                },
+                {
+                  "type": "text",
+                  "id": "S7BNY",
+                  "name": "StatusLabel",
+                  "fill": "$text-secondary",
+                  "content": "Daemon running",
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Vwg4z",
+          "name": "DELL P2725QE (1) Card",
+          "width": "fill_container",
+          "fill": "$card",
+          "cornerRadius": 10,
+          "stroke": "$card-stroke",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "kTwaF",
+              "name": "Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "t6HTU",
+                  "name": "NameGroup",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "vZlbD",
+                      "name": "Icon",
+                      "width": 15,
+                      "height": 15,
+                      "icon": "monitor",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "TwjdT",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "DELL P2725QE (1)",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "id": "rzpBf",
+                  "type": "ref",
+                  "ref": "Eyq8k",
+                  "name": "Toggle",
+                  "fill": "$off-track",
+                  "justifyContent": "start"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Pe55J",
+              "name": "SubPad",
+              "padding": [
+                0,
+                0,
+                0,
+                23
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "VzzDF",
+                  "name": "Sub",
+                  "fill": "$text-secondary",
+                  "content": "2560 × 1440 @ 100 Hz · Native HiDPI ✓",
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "X5VvWX",
+          "name": "DELL P2725QE (2) Card",
+          "width": "fill_container",
+          "fill": "$card",
+          "cornerRadius": 10,
+          "stroke": "$card-stroke",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "MTIjE",
+              "name": "Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "l6C31",
+                  "name": "NameGroup",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "f8qUDh",
+                      "name": "Icon",
+                      "width": 15,
+                      "height": 15,
+                      "icon": "monitor",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Hu5iX",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "DELL P2725QE (2)",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "id": "TjkqR",
+                  "type": "ref",
+                  "ref": "Eyq8k",
+                  "name": "Toggle",
+                  "fill": "$off-track",
+                  "justifyContent": "start"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RjQh1",
+              "name": "SubPad",
+              "padding": [
+                0,
+                0,
+                0,
+                23
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "nOfz9",
+                  "name": "Sub",
+                  "fill": "$text-secondary",
+                  "content": "2560 × 1440 @ 100 Hz · Native HiDPI ✓",
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GnFbG",
+          "name": "LG IPS QHD Card",
+          "width": "fill_container",
+          "fill": "$card",
+          "cornerRadius": 10,
+          "stroke": "$card-stroke",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "FOG1K",
+              "name": "Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Y6xEK",
+                  "name": "NameGroup",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "nj0sK",
+                      "name": "Icon",
+                      "width": 15,
+                      "height": 15,
+                      "icon": "monitor",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "AwE8k",
+                      "name": "Name",
+                      "fill": "$text-primary",
+                      "content": "LG IPS QHD",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "id": "o2i5R",
+                  "type": "ref",
+                  "ref": "Eyq8k",
+                  "name": "Toggle"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jal6J",
+              "name": "SubPad",
+              "padding": [
+                0,
+                0,
+                0,
+                23
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "g3MFQI",
+                  "name": "Sub",
+                  "fill": "$text-secondary",
+                  "content": "1278 × 2272 @ 100 Hz · HiDPI via hidpify ✓ · Portrait",
+                  "fontFamily": "$font",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "dnJfJ",
+              "name": "LooksLike",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "padding": [
+                8,
+                0,
+                0,
+                23
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "BGDKv",
+                  "name": "PickerRow",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "N7HyW7",
+                      "name": "PickerLabel",
+                      "fill": "$text-secondary",
+                      "content": "Looks like",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UjavZ",
+                      "name": "Dropdown",
+                      "clip": true,
+                      "fill": "$control",
+                      "cornerRadius": 6,
+                      "stroke": "$control-stroke",
+                      "strokeWidth": 1,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "K9kRdv",
+                          "name": "ValuePad",
+                          "padding": [
+                            4,
+                            8,
+                            4,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "EZkyK",
+                              "name": "Value",
+                              "fill": "$text-primary",
+                              "content": "1278 × 2272 (HiDPI)",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "KVF2S",
+                          "name": "ChevBox",
+                          "width": 18,
+                          "height": 23,
+                          "fill": "$accent",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "YIDr6",
+                              "name": "Chevrons",
+                              "width": 11,
+                              "height": 11,
+                              "icon": "chevrons-up-down",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "U3eXL8",
+                  "name": "Caption",
+                  "gap": 5,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "bEpYf",
+                      "name": "CapIcon",
+                      "width": 11,
+                      "height": 11,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "$accent"
+                    },
+                    {
+                      "type": "text",
+                      "id": "gz7I8",
+                      "name": "CapText",
+                      "fill": "$text-secondary",
+                      "content": "Matches DELL P2725QE density (108.6 PPI)",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "yPaBC",
+          "name": "FooterDivider",
+          "fill": "$divider",
+          "width": "fill_container",
+          "height": 1
+        },
+        {
+          "type": "frame",
+          "id": "f4iL0e",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "gXFdQ",
+              "name": "LoginGroup",
+              "gap": 7,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AhNvT",
+                  "name": "Checkbox",
+                  "width": 15,
+                  "height": 15,
+                  "fill": "$accent",
+                  "cornerRadius": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "upC6h",
+                      "name": "Check",
+                      "width": 10,
+                      "height": 10,
+                      "icon": "check",
+                      "library": "lucide",
+                      "fill": "#FFFFFF"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "qkyK1",
+                  "name": "LoginLabel",
+                  "fill": "$text-primary",
+                  "content": "Start at Login",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HUiIB",
+              "name": "QuitBtn",
+              "fill": "$off-track",
+              "cornerRadius": 6,
+              "padding": [
+                4,
+                10
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n7KchB",
+                  "name": "QuitLabel",
+                  "fill": "$text-primary",
+                  "content": "Quit",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "zZf3W",
+      "x": 40,
+      "y": 517,
+      "name": "App Icon — Alt (2x, kept)",
+      "clip": true,
+      "width": 512,
+      "height": 512,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 0,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0A5FE0",
+            "position": 0
+          },
+          {
+            "color": "#4DA3FF",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 114,
+      "layout": "vertical",
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "CCzE4",
+          "name": "Monitor",
+          "layout": "vertical",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "kCY8l",
+              "name": "Screen",
+              "width": 312,
+              "height": 220,
+              "fill": "#FFFFFF",
+              "cornerRadius": 28,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "t33ECK",
+                  "name": "2x",
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 0,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#0A5FE0",
+                        "position": 0
+                      },
+                      {
+                        "color": "#4DA3FF",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "content": "2×",
+                  "fontFamily": "Inter",
+                  "fontSize": 118,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "id": "wIrBn",
+              "name": "Neck",
+              "fill": "#FFFFFF",
+              "width": 44,
+              "height": 26
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 10,
+              "id": "q3v7w",
+              "name": "Base",
+              "fill": "#FFFFFF",
+              "width": 132,
+              "height": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "znQ8Q",
+      "x": 672,
+      "y": 517,
+      "name": "App Icon",
+      "clip": true,
+      "width": 512,
+      "height": 512,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 0,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0B2E6B",
+            "position": 0
+          },
+          {
+            "color": "#051A40",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 114,
+      "stroke": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 0,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#FFFFFF0F",
+            "position": 0
+          },
+          {
+            "color": "#FFFFFF33",
+            "position": 0.65
+          },
+          {
+            "color": "#FFFFFF99",
+            "position": 1
+          }
+        ]
+      },
+      "strokeWidth": 3,
+      "strokeAlignment": "inner",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "DH2K1",
+          "x": 0,
+          "y": 0,
+          "name": "BlurHalf",
+          "clip": true,
+          "width": 256,
+          "height": 512,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "jnUfT",
+              "x": 140,
+              "y": 80,
+              "name": "GlyphBlur",
+              "fill": "#FFFFFFD9",
+              "effect": {
+                "type": "blur",
+                "radius": 14
+              },
+              "content": "A",
+              "fontFamily": "Inter",
+              "fontSize": 300,
+              "fontWeight": "800"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "PgY03",
+          "x": 256,
+          "y": 0,
+          "name": "SharpHalf",
+          "clip": true,
+          "width": 256,
+          "height": 512,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "e5yRkI",
+              "x": -116,
+              "y": 80,
+              "name": "GlyphSharp",
+              "fill": "#FFFFFF",
+              "content": "A",
+              "fontFamily": "Inter",
+              "fontSize": 300,
+              "fontWeight": "800"
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "j8iw3u",
+          "x": 254,
+          "y": 0,
+          "name": "Divider",
+          "fill": "#FFFFFF66",
+          "width": 4,
+          "height": 512
+        }
+      ]
+    }
+  ],
+  "themes": {
+    "mode": [
+      "light",
+      "dark"
+    ]
+  },
+  "variables": {
+    "bg": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F5F5F7",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#262628",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "card": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#2C2C2E",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "text-primary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#1D1D1F",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#F5F5F7",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "text-secondary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#6E6E73",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#98989D",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "accent": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#007AFF",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#0A84FF",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "green": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#34C759",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#30D158",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "divider": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E5E5EA",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#38383A",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "off-track": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E9E9EB",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#48484A",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "font": {
+      "type": "string",
+      "value": "Inter"
+    },
+    "control": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#3A3A3C",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "control-stroke": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#D2D2D7",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#48484A",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    },
+    "card-stroke": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#00000012",
+          "theme": {
+            "mode": "light"
+          }
+        },
+        {
+          "value": "#FFFFFF14",
+          "theme": {
+            "mode": "dark"
+          }
+        }
+      ]
+    }
+  },
+  "fileToken": "ebfb86ae-1a8a-4ce5-a6e8-734ca2be10c1"
+}

@@ -20,6 +20,12 @@ let package = Package(
         ),
         .executableTarget(
             name: "hidpify",
+            dependencies: [
+                "HidpifyCore"
+            ]
+        ),
+        .executableTarget(
+            name: "HidpifyApp",
             dependencies: ["HidpifyCore"]
         ),
     ]
