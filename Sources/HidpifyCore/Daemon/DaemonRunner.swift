@@ -17,8 +17,24 @@ import os
 public final class DaemonRunner {
     fileprivate let logger = Logger(subsystem: "dev.irae.hidpify", category: "daemon")
     fileprivate var debounceWorkItem: DispatchWorkItem?
+    fileprivate var retryWorkItem: DispatchWorkItem?
 
     public init() {}
+
+    /// Runs one reapply and, if `SessionController` reports a target still
+    /// backing off (e.g. a virtual display that won't come online while
+    /// WindowServer settles after wake), schedules the next retry at the
+    /// requested time. This keeps a failed target getting retried with backoff
+    /// even when no further display reconfiguration fires. Main-queue only.
+    fileprivate func performReapply() {
+        let nextRetry = SessionController.shared.reapply(configs: ConfigStore.load().targets)
+        retryWorkItem?.cancel()
+        guard let nextRetry else { return }
+        let delay = max(0.5, nextRetry.timeIntervalSinceNow)
+        let workItem = DispatchWorkItem { [weak self] in self?.performReapply() }
+        retryWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+    }
 
     public func run() {
         // Registers this process as a background GUI app (`.prohibited` — no
@@ -40,7 +56,7 @@ public final class DaemonRunner {
             }
         }
 
-        SessionController.shared.reapply(configs: ConfigStore.load().targets)
+        performReapply()
 
         CGDisplayRegisterReconfigurationCallback(
             daemonReconfigurationCallback,
@@ -60,13 +76,14 @@ public final class DaemonRunner {
             forName: NSWorkspace.screensDidWakeNotification,
             object: nil,
             queue: .main
-        ) { [logger] _ in
+        ) { [self] _ in
             logger.info("screensDidWake — scheduling reapply")
             // Give the displays time to finish coming back before the first
-            // reapply; the reapply cooldown then absorbs the reconfiguration
-            // burst that follows (SessionController.reapplyCooldown).
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                SessionController.shared.reapply(configs: ConfigStore.load().targets)
+            // reapply; if the virtual display still can't come online (WindowServer
+            // not settled yet), reapply's exponential backoff keeps retrying
+            // without churning.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [self] in
+                performReapply()
             }
         }
 
@@ -92,9 +109,9 @@ public final class DaemonRunner {
         sigintSource.resume()
 
         let sighupSource = DispatchSource.makeSignalSource(signal: SIGHUP, queue: .main)
-        sighupSource.setEventHandler { [logger] in
+        sighupSource.setEventHandler { [self] in
             logger.info("SIGHUP received — reapplying config")
-            SessionController.shared.reapply(configs: ConfigStore.load().targets)
+            performReapply()
         }
         sighupSource.resume()
 
@@ -130,7 +147,7 @@ public final class DaemonRunner {
                         ArrangementStore.save(baseline)
                     }
                 }
-                SessionController.shared.reapply(configs: ConfigStore.load().targets)
+                self.performReapply()
             }
             self.debounceWorkItem = workItem
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: workItem)

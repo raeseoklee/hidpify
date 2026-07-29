@@ -46,6 +46,11 @@ public final class SessionController {
 
     public private(set) var sessions: [ActiveSession] = []
 
+    /// Per-target exponential-backoff state after a failed `enable` in
+    /// `reapply` (see its doc comment). Cleared on success or when the target
+    /// is removed from the config.
+    private var enableBackoff: [DisplayMatcher: (attempts: Int, retryAt: Date)] = [:]
+
     private let logger = Logger(subsystem: "dev.irae.hidpify", category: "SessionController")
 
     private init() {}
@@ -330,16 +335,30 @@ public final class SessionController {
         }
     }
 
-    /// Idempotent, never throws — failures are logged and skipped so the rest
-    /// of the batch still gets applied.
-    public func reapply(configs: [TargetConfig]) {
+    /// Idempotent, never throws. Applies each target that isn't already up.
+    ///
+    /// On failure it does NOT immediately retry: right after wake, creating a
+    /// `CGVirtualDisplay` succeeds as an object but the display never registers
+    /// in `CGGetOnlineDisplayList` (WindowServer is still settling), so
+    /// `waitUntilOnline` times out. Retrying at once just creates/destroys a new
+    /// virtual every few seconds, and that churn keeps WindowServer from ever
+    /// settling — the daemon "flaps" and HiDPI never comes up. Instead each
+    /// failing target backs off exponentially (3→6→12→24→30s), giving
+    /// WindowServer quiet time to settle so a later attempt succeeds. Returns the
+    /// earliest time a backed-off target should be retried (`nil` if none), so
+    /// the daemon can schedule that retry even without a new reconfiguration.
+    @discardableResult
+    public func reapply(configs: [TargetConfig]) -> Date? {
         let staleMatchers = sessions
             .map { $0.config.matcher }
             .filter { matcher in !configs.contains { $0.matcher == matcher } }
 
         for matcher in staleMatchers {
             try? disable(matcher: matcher)
+            enableBackoff[matcher] = nil
         }
+        // Drop backoff state for matchers no longer configured at all.
+        enableBackoff = enableBackoff.filter { key, _ in configs.contains { $0.matcher == key } }
 
         for config in configs {
             guard let physical = DisplayEnumerator.find(matcher: config.matcher) else {
@@ -355,31 +374,45 @@ public final class SessionController {
                 switch session.mode {
                 case .mirror:
                     if recentlyEnabled || physical.mirrorsDisplayID == session.handle.displayID {
+                        enableBackoff[config.matcher] = nil
                         continue
                     }
                 case .stream:
                     let virtualOnline = DisplayEnumerator.onlineDisplays()
                         .contains { $0.id == session.handle.displayID }
                     if recentlyEnabled || virtualOnline {
+                        enableBackoff[config.matcher] = nil
                         continue
                     }
                 }
             }
 
+            // Still inside a backoff window from a previous failure — skip so we
+            // don't churn WindowServer; the daemon retries at `retryAt`.
+            if let state = enableBackoff[config.matcher], Date() < state.retryAt {
+                continue
+            }
+
             do {
                 try enable(config: config)
+                enableBackoff[config.matcher] = nil
             } catch {
+                let attempts = (enableBackoff[config.matcher]?.attempts ?? 0) + 1
+                let delay = min(30.0, 3.0 * pow(2.0, Double(attempts - 1)))
+                enableBackoff[config.matcher] = (attempts, Date().addingTimeInterval(delay))
                 logger.error(
-                    "reapply failed for \(config.displayName, privacy: .public): \(String(describing: error), privacy: .public)"
+                    "reapply failed for \(config.displayName, privacy: .public) — retrying in \(Int(delay), privacy: .public)s: \(String(describing: error), privacy: .public)"
                 )
             }
         }
+
+        return enableBackoff.values.map(\.retryAt).min()
     }
 
     /// Polls `DisplayEnumerator.onlineDisplays()` for the freshly created virtual
     /// display to appear (0.1s interval, 2s ceiling — §4.4 step ⑤).
     private func waitUntilOnline(_ virtualID: CGDirectDisplayID) throws {
-        let deadline = Date().addingTimeInterval(2.0)
+        let deadline = Date().addingTimeInterval(3.0)
         repeat {
             if DisplayEnumerator.onlineDisplays().contains(where: { $0.id == virtualID }) {
                 return
