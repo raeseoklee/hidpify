@@ -70,25 +70,34 @@ struct PopoverView: View {
 
     private var footer: some View {
         let cliPath = appState.cliBinaryPath()
-        return HStack {
-            Toggle(
-                "Start at Login",
-                isOn: Binding(
-                    get: { appState.agentLoaded },
-                    set: { appState.setStartAtLogin($0) }
+        return VStack(spacing: 6) {
+            HStack {
+                Toggle(
+                    "Start at Login",
+                    isOn: Binding(
+                        get: { appState.agentLoaded },
+                        set: { appState.setStartAtLogin($0) }
+                    )
                 )
-            )
-            .toggleStyle(.checkbox)
-            .font(.system(size: 12))
-            .disabled(cliPath == nil)
-            .help(cliPath == nil ? "Install the hidpify CLI first" : "")
+                .toggleStyle(.checkbox)
+                .font(.system(size: 12))
+                .disabled(cliPath == nil)
+                .help(cliPath == nil ? "Install the hidpify CLI first" : "")
 
-            Spacer()
+                Spacer()
 
-            Button("Quit") {
-                NSApplication.shared.terminate(nil)
+                Button("Quit") {
+                    NSApplication.shared.terminate(nil)
+                }
+                .controlSize(.small)
             }
-            .controlSize(.small)
+
+            HStack {
+                Text("hidpify v\(Hidpify.version)")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.tertiary)
+                Spacer()
+            }
         }
     }
 }

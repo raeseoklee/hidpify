@@ -53,7 +53,11 @@ RESOURCES_DIR="${CONTENTS_DIR}/Resources"
 mkdir -p "${RESOURCES_DIR}"
 cp "Assets/hidpify.icns" "${RESOURCES_DIR}/hidpify.icns"
 
-cat > "${CONTENTS_DIR}/Info.plist" <<'EOF'
+# Single source of truth for the version: Sources/HidpifyCore/Version.swift.
+VERSION="$(sed -n 's/.*version = "\([^"]*\)".*/\1/p' Sources/HidpifyCore/Version.swift | head -1)"
+VERSION="${VERSION:-0.0.0}"
+
+cat > "${CONTENTS_DIR}/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -69,9 +73,9 @@ cat > "${CONTENTS_DIR}/Info.plist" <<'EOF'
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
+    <string>${VERSION}</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>${VERSION}</string>
     <key>CFBundleIconFile</key>
     <string>hidpify</string>
     <key>LSUIElement</key>

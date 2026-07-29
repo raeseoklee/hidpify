@@ -138,9 +138,9 @@ private func hasHelpFlag(_ args: [String]) -> Bool {
 private func printTopLevelUsage() {
     print(
         """
-        사용법: hidpify <subcommand> [options]
+        hidpify \(Hidpify.version) — macOS 외장 모니터 HiDPI 강제 적용 도구
 
-        macOS 외장 모니터 HiDPI 강제 적용 도구
+        사용법: hidpify <subcommand> [options]
 
         명령어:
           list             연결된 디스플레이 목록을 표로 출력합니다.
@@ -150,6 +150,7 @@ private func printTopLevelUsage() {
           daemon           상주 데몬으로 실행합니다 (보통 LaunchAgent가 실행).
           install-agent    LaunchAgent를 설치하여 로그인 시 데몬이 자동 실행되게 합니다.
           uninstall-agent  LaunchAgent를 제거합니다.
+          version          버전을 출력합니다 (--version, -v).
 
         각 명령어의 옵션은 'hidpify <subcommand> --help'로 확인하세요.
         """
@@ -462,6 +463,11 @@ guard let subcommand = allArguments.first else {
 
 if subcommand == "--help" || subcommand == "-h" {
     printTopLevelUsage()
+    Foundation.exit(0)
+}
+
+if subcommand == "--version" || subcommand == "-v" || subcommand == "version" {
+    print("hidpify \(Hidpify.version)")
     Foundation.exit(0)
 }
 
