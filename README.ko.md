@@ -21,7 +21,7 @@ Swift 툴체인 필요(`xcode-select --install`); 모두 소스에서 빌드됩�
 brew install --cask raeseoklee/tap/hidpify
 ```
 
-앱이 공증(notarize)되어 있지 않아(ad-hoc 서명), **첫 실행 시 macOS Gatekeeper가 막습니다.** 허용하려면 터미널에서 한 번 실행하세요:
+cask는 설치 시 자체적으로 셋업합니다 — 앱의 Gatekeeper 격리 플래그를 해제하고(앱은 공증되지 않은 ad-hoc 서명), 데몬을 지금 그리고 매 로그인 시 실행되도록 등록합니다. 드물게 그래도 첫 실행이 막히면 한 번 실행하세요:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Hidpify.app
@@ -47,6 +47,29 @@ Scripts/install-cli.sh          # 빌드 + ~/.local/bin/hidpify 설치
 ```
 
 CLI/데몬 바이너리를 **맨 `cp`로 설치하지 마세요.** `install.sh`와 `Scripts/install-cli.sh`는 복사 후 `codesign --force -s -`로 재서명합니다 — SPM의 linker 서명은 복사 시 무효화되어(`codesign --verify`는 통과하지만) launchd가 실행 시 "Invalid Signature"로 거부해 데몬이 크래시-재시작 루프에 빠지기 때문입니다.
+
+### 업데이트
+
+```sh
+brew update                                  # 탭을 최신 릴리스로 갱신
+brew upgrade --cask raeseoklee/tap/hidpify   # 메뉴바 앱 + 데몬 업데이트
+brew upgrade raeseoklee/tap/hidpify          # (CLI만 설치한 경우) CLI/데몬 업데이트
+```
+
+이런 개인 탭(third-party tap)에서 유의할 Homebrew 동작 두 가지:
+
+- `brew`가 최신 릴리스보다 낮은 버전을 보여주면 먼저 `brew update`를 실행하세요 — Homebrew는 탭을 캐시하고 `brew update`(또는 주기적 auto-update) 때만 갱신합니다. 새로 `brew install`하면 항상 최신 버전을 받습니다.
+- 인자 없는 `brew upgrade`는 메뉴바 앱을 **건너뜁니다** — Homebrew는 third-party cask의 설치 훅(격리 해제, 데몬 등록)을 무인으로 자동 실행하지 않습니다. 앱은 위의 명시적 `brew upgrade --cask …`로 업데이트하세요. CLI formula는 인자 없는 `brew upgrade`로도 정상 업데이트됩니다.
+
+### 삭제
+
+```sh
+brew uninstall --cask raeseoklee/tap/hidpify   # 앱과 데몬(LaunchAgent)을 함께 제거
+brew uninstall raeseoklee/tap/hidpify          # CLI/데몬 바이너리 제거
+brew uninstall --cask --zap raeseoklee/tap/hidpify   # ~/.config/hidpify 와 로그도 삭제
+```
+
+cask 삭제 시 LaunchAgent를 제거하고 데몬을 중지하므로 이후 남아 도는 프로세스가 없습니다. (CLI만 설치한 경우엔 `hidpify uninstall-agent`를 먼저 실행한 뒤 `brew uninstall` 하세요.)
 
 ## 명령어
 

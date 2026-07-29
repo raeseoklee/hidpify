@@ -21,7 +21,7 @@ Requires the Swift toolchain (`xcode-select --install`); everything builds from 
 brew install --cask raeseoklee/tap/hidpify
 ```
 
-On first launch macOS Gatekeeper blocks the app because it isn't notarized (it's ad-hoc signed). To allow it, run this once in Terminal:
+The cask does its own setup on install: it clears the app's Gatekeeper quarantine flag (the app isn't notarized — it's ad-hoc signed) and registers the daemon to run now and at every login. In the rare case macOS still blocks the app on first launch, run this once:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Hidpify.app
@@ -47,6 +47,29 @@ Scripts/install-cli.sh          # build + install to ~/.local/bin/hidpify
 ```
 
 **Never install the CLI/daemon binary with a plain `cp`.** `install.sh` and `Scripts/install-cli.sh` re-sign it with `codesign --force -s -` after copying — SPM's linker signature is invalidated on copy (it still passes `codesign --verify`, but launchd rejects it at launch with "Invalid Signature"), which sends the daemon into a crash-restart loop.
+
+### Updating
+
+```sh
+brew update                                  # refresh the tap to the latest release
+brew upgrade --cask raeseoklee/tap/hidpify   # update the menu bar app + daemon
+brew upgrade raeseoklee/tap/hidpify          # (CLI-only installs) update the CLI/daemon
+```
+
+Two Homebrew notes for third-party taps like this one:
+
+- If `brew` shows an older version than the latest release, run `brew update` first — Homebrew caches taps and only refreshes them on `brew update` or its periodic auto-update. A fresh `brew install` always fetches the current version.
+- Plain `brew upgrade` (no arguments) **skips** the menu bar app: Homebrew won't auto-run a third-party cask's install hooks (quarantine-clear, daemon registration) unattended. Update the app with the explicit `brew upgrade --cask …` above. The CLI formula upgrades normally with plain `brew upgrade`.
+
+### Uninstalling
+
+```sh
+brew uninstall --cask raeseoklee/tap/hidpify   # removes the app AND the daemon (LaunchAgent)
+brew uninstall raeseoklee/tap/hidpify          # removes the CLI/daemon binary
+brew uninstall --cask --zap raeseoklee/tap/hidpify   # also deletes ~/.config/hidpify and logs
+```
+
+The cask's uninstall removes the LaunchAgent and stops the daemon, so nothing keeps running afterward. (For a CLI-only install, run `hidpify uninstall-agent` first, then `brew uninstall`.)
 
 ## Commands
 
