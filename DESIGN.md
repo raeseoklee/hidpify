@@ -385,6 +385,17 @@ Add `mode: ScalingMode` (`"mirror"`/`"stream"`, a String enum) to `TargetConfig`
 
 NFR-1 is updated as follows: "The default (mirroring) path requires no TCC permission. Screen-recording permission is requested only when the user explicitly opts into streaming mode."
 
+### 9.6 Stream Hardening (v0.1.6)
+
+Streaming was promoted from "experimental afterthought" toward a supportable path by closing the concrete robustness gaps found in the pipeline:
+
+- **Stream health check + auto-recreate** (`StreamSession.isHealthy`, `SessionController.reapply`): a stream can die (a ScreenCaptureKit `didStopWithError`, or a closed player window) with no display reconfiguration to trigger a reapply, leaving a frozen black panel. `StreamOutputHandler` now records the stopped state; `reapply` trusts a stream only when it's *healthy* (virtual online, capture not errored, window visible) and otherwise recreates it (reusing the existing exponential backoff). A daemon **health-check timer** (5s, only while streaming) drives this even without a reconfiguration event.
+- **Permission-granted-later upgrade** (`SessionController.reapply`): when screen recording is granted after we fell back to mirror, `reapply` upgrades the session to the stream the config asked for — and **falls back to mirror if the upgrade fails**, so the display is never left dead (§4.8).
+- **Player window robustness** (`StreamSession.refreshWindowFrame`): the borderless player window is now repositioned/resized to the panel's current frame on every reapply (the parked "island" origin shifts on renormalization; the panel can change resolution/rotation), and re-asserted on top.
+- **Stable-cdhash daemon binary** (app `ensureStableDaemonBinary`): the daemon now runs from a byte-stable copy of the binary bundled in `Hidpify.app` (identical for every user of a release, re-signed ad-hoc → deterministic cdhash), instead of the per-machine, rebuilt formula binary. So the **Screen Recording (TCC) grant survives `brew upgrade`** (it only needs re-granting when a release actually changes the daemon binary). The app migrates an existing LaunchAgent onto this path on launch.
+- **Ghost-desktop mitigation**: the player window is raised to `.floating` (with `.canJoinAllSpaces`/`.fullScreenAuxiliary`) so the physical panel's own desktop stays hidden behind the stream even if an app restores a window onto it. Full removal remains impossible via public API (§9.5) — the ghost still shows in Mission Control/screenshots.
+- **Performance**: no change needed — ScreenCaptureKit is already change-driven (a static desktop sends no frames, so idle cost is ~0) and the frame path is zero-copy (IOSurface→`CALayer.contents`), on top of the existing 60fps capture cap. A further capture-at-panel-native-resolution optimization is possible but trades against sharpness and needs A/B validation, so it's left as future tuning.
+
 ## 10. Arrangement Preservation
 
 ### 10.1 Problem

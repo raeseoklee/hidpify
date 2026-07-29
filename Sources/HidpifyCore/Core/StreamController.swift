@@ -26,6 +26,40 @@ public final class StreamSession {
         self.physicalID = physicalID
     }
 
+    /// Whether this stream is still delivering: ScreenCaptureKit hasn't reported
+    /// it stopped (capture error) AND the player window is still on screen. A dead
+    /// stream (a `didStopWithError`, or a window that got closed) reads unhealthy
+    /// so the daemon can tear it down and recreate it instead of leaving a frozen
+    /// black panel (DESIGN.md §9.5). Note: a *static* desktop legitimately sends
+    /// no new frames (ScreenCaptureKit is change-driven), so frame arrival is
+    /// deliberately NOT used as a liveness signal — only an explicit stop is.
+    /// Reads `NSWindow.isVisible`; call on the main thread.
+    public var isHealthy: Bool {
+        !output.isStopped && window.isVisible
+    }
+
+    /// Repositions/resizes the player window to fully cover the physical panel at
+    /// its *current* location and size. macOS renormalizes the arrangement (so the
+    /// parked "island" origin shifts) and the panel can change resolution/rotation
+    /// while streaming; without this the borderless window drifts off the panel,
+    /// showing black or a partial frame. Best-effort, main-thread. Returns false
+    /// if the physical display has no matching `NSScreen` (e.g. unplugged).
+    @discardableResult
+    public func refreshWindowFrame() -> Bool {
+        guard let screen = NSScreen.screens.first(where: { screen in
+            (screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)
+                .map { CGDirectDisplayID($0.uint32Value) == physicalID } ?? false
+        }) else { return false }
+        if window.frame != screen.frame {
+            window.setFrame(screen.frame, display: true)
+            window.contentView?.frame = NSRect(origin: .zero, size: screen.frame.size)
+        }
+        // Re-assert on top: a reconfiguration can reorder windows on the panel,
+        // which would let the ghost desktop peek through (DESIGN.md §9.5).
+        window.orderFrontRegardless()
+        return true
+    }
+
     /// Stops capture and closes the player window. Safe to call once; does not
     /// touch display origins (see type doc).
     public func stop() {
@@ -171,7 +205,13 @@ public enum StreamController {
         )
         window.isOpaque = true
         window.backgroundColor = .black
-        window.level = .normal
+        // Above normal windows so the physical panel's own "ghost" desktop stays
+        // hidden behind the stream even if an app restores a window onto it (the
+        // cursor can't reach the island, but window positions can still be
+        // restored there). Combined with `.canJoinAllSpaces`/`.fullScreenAuxiliary`
+        // below, the player also overlays a ghost fullscreen space. Reduces — but
+        // can't fully remove — the ghost desktop (DESIGN.md §9.5).
+        window.level = .floating
         window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
         window.ignoresMouseEvents = false
         window.hasShadow = false
@@ -238,6 +278,17 @@ final class StreamOutputHandler: NSObject, SCStreamOutput, SCStreamDelegate, @un
     /// safe to touch from the capture queue without additional synchronization.
     var layer: CALayer?
 
+    /// Set true when ScreenCaptureKit reports the stream stopped (capture error).
+    /// Guarded by `stateLock` since `didStopWithError` and the daemon's health
+    /// check (`StreamSession.isHealthy`) run on different threads.
+    private let stateLock = NSLock()
+    private var _stopped = false
+    var isStopped: Bool {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+        return _stopped
+    }
+
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of outputType: SCStreamOutputType) {
         guard outputType == .screen, sampleBuffer.isValid,
             let pixelBuffer = sampleBuffer.imageBuffer,
@@ -256,5 +307,8 @@ final class StreamOutputHandler: NSObject, SCStreamOutput, SCStreamDelegate, @un
 
     func stream(_ stream: SCStream, didStopWithError error: Error) {
         logger.error("SCStream 오류로 중단됨: \(error.localizedDescription, privacy: .public)")
+        stateLock.lock()
+        _stopped = true
+        stateLock.unlock()
     }
 }

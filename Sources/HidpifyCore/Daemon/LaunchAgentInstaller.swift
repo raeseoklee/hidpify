@@ -103,6 +103,19 @@ public enum LaunchAgentInstaller {
         FileManager.default.fileExists(atPath: plistURL.path)
     }
 
+    /// The absolute binary path the installed LaunchAgent runs as `daemon`
+    /// (`ProgramArguments[0]`), or `nil` if not installed / unreadable. Lets a
+    /// caller detect when the daemon is pointed at a different binary than it
+    /// wants (e.g. migrating an old install onto a stable-cdhash binary).
+    public static func installedBinaryPath() -> String? {
+        guard let data = try? Data(contentsOf: plistURL),
+            let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil),
+            let dict = plist as? [String: Any],
+            let args = dict["ProgramArguments"] as? [String]
+        else { return nil }
+        return args.first
+    }
+
     /// (Re)bootstraps the existing plist via `launchctl bootstrap`, without writing
     /// a new plist. Returns `false` if no plist is installed yet — use `install()`
     /// for that case.

@@ -17,17 +17,31 @@ final class AppState: ObservableObject {
 
     init() {
         refresh()
-        // Self-heal: if HiDPI is configured but the LaunchAgent has gone missing
-        // (e.g. removed by an external `brew` operation), reinstall it so the
-        // daemon comes back. Only acts when HiDPI targets exist and a standalone
-        // `hidpify` binary is available to run.
-        if !config.targets.isEmpty, !daemonInstalled, daemonBinaryPathForInstall() != nil {
-            ensureDaemonRunning()
-        }
+        maintainDaemonBinary()
         CGDisplayRegisterReconfigurationCallback(
             appStateReconfigurationCallback,
             Unmanaged.passUnretained(self).toOpaque()
         )
+    }
+
+    /// On launch, keep the daemon on the stable-cdhash binary and alive:
+    /// - **Migrate** an existing LaunchAgent that points at some other binary
+    ///   (e.g. the formula path from an older version) onto the stable bundled
+    ///   copy, so the Screen Recording grant survives future `brew upgrade`s.
+    /// - **Self-heal**: if HiDPI is configured but the agent went missing (e.g.
+    ///   removed by an external `brew` operation), reinstall it so the daemon
+    ///   comes back.
+    private func maintainDaemonBinary() {
+        if daemonInstalled {
+            if let stable = ensureStableDaemonBinary(),
+                LaunchAgentInstaller.installedBinaryPath() != stable
+            {
+                try? LaunchAgentInstaller.install(binaryPath: stable)
+                refresh()
+            }
+        } else if !config.targets.isEmpty, daemonBinaryPathForInstall() != nil {
+            ensureDaemonRunning()
+        }
     }
 
     /// Refreshes displays (physical only), config, daemon-loaded status, and
@@ -224,15 +238,79 @@ final class AppState: ObservableObject {
     /// Resolves which `hidpify` binary the LaunchAgent should run as `daemon`
     /// when this app installs/starts it.
     ///
-    /// We deliberately use a STANDALONE binary (`cliBinaryPath()` — e.g.
-    /// `~/.local/bin/hidpify`), never the copy nested inside this app bundle.
-    /// Running the daemon from inside an ad-hoc-signed `.app` gets it SIGKILLed
-    /// by taskgated ("Invalid Signature") in a crash-restart loop (see
-    /// `LaunchAgentInstaller.resolvedBinaryPath`'s note). The trade-off is that
-    /// the app requires the `hidpify` CLI to be installed on a standard path;
-    /// the daemon controls are disabled (and Start at Login) when it isn't.
+    /// Prefers a STABLE, app-owned copy of the daemon binary bundled inside this
+    /// .app (`ensureStableDaemonBinary`): every user of a given release has the
+    /// exact same bytes, so its ad-hoc code signature — and thus the Screen
+    /// Recording (TCC) grant streaming needs — is identical across machines and
+    /// survives `brew upgrade`. The per-machine, rebuilt formula binary
+    /// (`cliBinaryPath`) is the fallback for CLI-only installs; its cdhash changes
+    /// on every rebuild, so its Screen Recording grant is lost on each upgrade.
+    ///
+    /// We never point the daemon at the copy *inside* the bundle — a launchd
+    /// helper run from within an ad-hoc-signed .app is SIGKILLed by taskgated
+    /// (see `LaunchAgentInstaller.resolvedBinaryPath`). The stable copy lives
+    /// outside the bundle and is re-signed as a standalone binary.
     private func daemonBinaryPathForInstall() -> String? {
-        cliBinaryPath()
+        ensureStableDaemonBinary() ?? cliBinaryPath()
+    }
+
+    /// The daemon binary bundled inside this .app (`Contents/MacOS/hidpify`) —
+    /// identical bytes for every user of a release — or nil when not running from
+    /// an app bundle (e.g. `swift run`).
+    private func bundledDaemonBinaryPath() -> String? {
+        let path = Bundle.main.bundleURL
+            .appendingPathComponent("Contents/MacOS/hidpify").path
+        return FileManager.default.isExecutableFile(atPath: path) ? path : nil
+    }
+
+    /// Stable, app-owned location the daemon actually runs from. Kept in place
+    /// across upgrades so both the LaunchAgent path and the binary's cdhash stay
+    /// constant.
+    private var stableDaemonBinaryPath: String {
+        (NSHomeDirectory() as NSString)
+            .appendingPathComponent("Library/Application Support/dev.irae.hidpify/hidpifyd")
+    }
+
+    /// Copies the bundled daemon binary to `stableDaemonBinaryPath` and re-signs
+    /// it (ad-hoc, deterministic for identical bytes) when it's missing or the app
+    /// version changed. Returns the stable path, or nil when there's no bundled
+    /// binary (formula-only install → caller falls back to the CLI).
+    @discardableResult
+    private func ensureStableDaemonBinary() -> String? {
+        guard let bundled = bundledDaemonBinaryPath() else { return nil }
+        let dest = stableDaemonBinaryPath
+        let dir = (dest as NSString).deletingLastPathComponent
+        let versionStamp = (dir as NSString).appendingPathComponent("version")
+        let fm = FileManager.default
+
+        let upToDate =
+            fm.isExecutableFile(atPath: dest)
+            && (try? String(contentsOfFile: versionStamp, encoding: .utf8)) == Hidpify.version
+        if upToDate { return dest }
+
+        do {
+            try fm.createDirectory(atPath: dir, withIntermediateDirectories: true)
+            if fm.fileExists(atPath: dest) { try fm.removeItem(atPath: dest) }
+            try fm.copyItem(atPath: bundled, toPath: dest)
+            resignAdHoc(dest)
+            try? Hidpify.version.write(toFile: versionStamp, atomically: true, encoding: .utf8)
+        } catch {
+            return fm.isExecutableFile(atPath: dest) ? dest : nil
+        }
+        return dest
+    }
+
+    /// Re-signs `path` ad-hoc so launchd accepts it after the copy (a plain copy
+    /// can invalidate the signature). `codesign --force -s -` yields a
+    /// deterministic cdhash for identical bytes → the same across users/upgrades.
+    private func resignAdHoc(_ path: String) {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/codesign")
+        process.arguments = ["--force", "-s", "-", path]
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.nullDevice
+        try? process.run()
+        process.waitUntilExit()
     }
 }
 

@@ -18,6 +18,7 @@ public final class DaemonRunner {
     fileprivate let logger = Logger(subsystem: "dev.irae.hidpify", category: "daemon")
     fileprivate var debounceWorkItem: DispatchWorkItem?
     fileprivate var retryWorkItem: DispatchWorkItem?
+    fileprivate var healthCheckTimer: DispatchSourceTimer?
 
     public init() {}
 
@@ -86,6 +87,23 @@ public final class DaemonRunner {
                 performReapply()
             }
         }
+
+        // Periodic stream health check (DESIGN.md §9.5). A stream can die
+        // (ScreenCaptureKit error, a closed player window) with no display
+        // reconfiguration to trigger a reapply, which would leave a frozen black
+        // panel. While any session is streaming, re-run reapply every 5s so it
+        // recreates an unhealthy stream (reapply is idempotent when healthy).
+        // Only active while streaming — mirror-only setups never poll.
+        let healthTimer = DispatchSource.makeTimerSource(queue: .main)
+        healthTimer.schedule(deadline: .now() + 5.0, repeating: 5.0)
+        healthTimer.setEventHandler { [weak self] in
+            guard let self else { return }
+            if SessionController.shared.hasStreamSessions() {
+                self.performReapply()
+            }
+        }
+        healthTimer.resume()
+        healthCheckTimer = healthTimer
 
         // Ignore default disposition first so the dispatch sources can intercept.
         signal(SIGTERM, SIG_IGN)

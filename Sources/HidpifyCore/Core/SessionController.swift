@@ -59,6 +59,21 @@ public final class SessionController {
         sessions.contains { $0.config.matcher == matcher }
     }
 
+    /// True while at least one active session is streaming — lets the daemon run
+    /// its periodic stream health check only when it can matter (DESIGN.md §9.5).
+    public func hasStreamSessions() -> Bool {
+        sessions.contains { $0.mode == .stream }
+    }
+
+    /// Reposition/resize each active stream's player window onto its physical
+    /// panel's current frame (island moves on renormalization; resolution/rotation
+    /// changes). Best-effort, main-thread (DESIGN.md §9.5).
+    public func refreshStreamWindows() {
+        for session in sessions where session.mode == .stream {
+            _ = session.stream?.refreshWindowFrame()
+        }
+    }
+
     /// §4.4 ①~⑤ / §9.2. Never leaves a half-applied state: any failure after the
     /// virtual display comes online unwinds everything it did (in reverse order)
     /// and rethrows (§4.8).
@@ -360,6 +375,10 @@ public final class SessionController {
         // Drop backoff state for matchers no longer configured at all.
         enableBackoff = enableBackoff.filter { key, _ in configs.contains { $0.matcher == key } }
 
+        // Keep each stream's player window aligned to its panel's current frame
+        // before deciding health below (DESIGN.md §9.5).
+        refreshStreamWindows()
+
         for config in configs {
             guard let physical = DisplayEnumerator.find(matcher: config.matcher) else {
                 continue
@@ -371,6 +390,28 @@ public final class SessionController {
                 // the mirror/stream state momentarily reads wrong.
                 let recentlyEnabled =
                     Date().timeIntervalSince(session.enabledAt) < Self.reapplyCooldown
+
+                // Screen-recording permission became available since we fell back
+                // to mirror (DESIGN.md §9.3): upgrade to the stream the config
+                // actually asks for. If the upgrade fails, fall back to mirror so
+                // the display is never left dead (DESIGN.md §4.8).
+                if session.mode == .mirror, config.mode == .stream,
+                    StreamController.hasScreenCapturePermission()
+                {
+                    do {
+                        try enable(config: config)
+                        enableBackoff[config.matcher] = nil
+                    } catch {
+                        logger.warning(
+                            "스트리밍 승격 실패 — 미러링을 유지합니다: \(String(describing: error), privacy: .public)"
+                        )
+                        var mirrorConfig = config
+                        mirrorConfig.mode = .mirror
+                        try? enable(config: mirrorConfig)
+                    }
+                    continue
+                }
+
                 switch session.mode {
                 case .mirror:
                     if recentlyEnabled || physical.mirrorsDisplayID == session.handle.displayID {
@@ -378,9 +419,14 @@ public final class SessionController {
                         continue
                     }
                 case .stream:
+                    // Trust only a *healthy* stream: virtual still online, the
+                    // capture hasn't errored, and the player window is still up
+                    // (DESIGN.md §9.5). A dead stream falls through to be recreated
+                    // instead of leaving a frozen black panel.
                     let virtualOnline = DisplayEnumerator.onlineDisplays()
                         .contains { $0.id == session.handle.displayID }
-                    if recentlyEnabled || virtualOnline {
+                    let healthy = virtualOnline && session.stream?.isHealthy == true
+                    if healthy || recentlyEnabled {
                         enableBackoff[config.matcher] = nil
                         continue
                     }
