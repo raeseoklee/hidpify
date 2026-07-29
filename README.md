@@ -21,13 +21,11 @@ Requires the Swift toolchain (`xcode-select --install`); everything builds from 
 brew install --cask raeseoklee/tap/hidpify
 ```
 
-Then **open Hidpify once** (from `/Applications`). The app isn't notarized (it's ad-hoc signed), so macOS Gatekeeper blocks the first launch — allow it under **System Settings → Privacy & Security → Open Anyway**, or clear the flag once in Terminal:
+The installer clears the app's Gatekeeper quarantine flag (the app is ad-hoc signed, not notarized), so it opens normally — just **open Hidpify once** from `/Applications`. That first launch also sets up the background daemon, which then runs at every login. In the rare case macOS still blocks it, run once:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Hidpify.app
 ```
-
-Opening the app the first time also sets up the background daemon, which then runs at every login. (On macOS 15 Sequoia the old right-click → Open trick no longer works.)
 
 **CLI only** — any of:
 
@@ -51,10 +49,12 @@ Scripts/install-cli.sh          # build + install to ~/.local/bin/hidpify
 ### Updating
 
 ```sh
-brew update && brew upgrade   # updates the CLI, the app, and the rest of your Homebrew
+brew update
+brew upgrade raeseoklee/tap/hidpify          # CLI/daemon (formula)
+brew upgrade --cask raeseoklee/tap/hidpify   # menu bar app
 ```
 
-Both the formula (CLI/daemon) and the cask (app) upgrade with a plain `brew upgrade`, and upgrades never disturb the running daemon. If `brew` shows an older version than the latest release, run `brew update` first — Homebrew caches taps and only refreshes them on `brew update` or its periodic auto-update. A fresh `brew install` always fetches the current version.
+The CLI formula upgrades with a plain `brew upgrade` too, but the **app cask needs the explicit `--cask`**: it uses a quarantine-clearing install hook (so the un-notarized app opens without macOS's "Apple can't verify…" dialog), which marks the cask "untrusted" so a plain `brew upgrade` skips it. Upgrades never disturb the running daemon. If `brew` shows an older version than the latest release, run `brew update` first — Homebrew only refreshes taps on `brew update` or its periodic auto-update; a fresh `brew install` always fetches the current version.
 
 ### Uninstalling
 

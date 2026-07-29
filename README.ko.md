@@ -21,13 +21,11 @@ Swift 툴체인 필요(`xcode-select --install`); 모두 소스에서 빌드됩�
 brew install --cask raeseoklee/tap/hidpify
 ```
 
-그 다음 **Hidpify를 한 번 실행하세요**(`/Applications`에서). 앱이 공증되지 않아(ad-hoc 서명) macOS Gatekeeper가 첫 실행을 막습니다 — **시스템 설정 → 개인정보 보호 및 보안 → 그래도 열기**로 허용하거나, 터미널에서 한 번 실행하세요:
+설치 시 앱의 Gatekeeper 격리(quarantine) 플래그를 자동 해제하므로(앱은 공증 안 된 ad-hoc 서명) 정상적으로 열립니다 — `/Applications`에서 **Hidpify를 한 번 실행**하세요. 그 첫 실행으로 백그라운드 데몬도 설정되며 이후 매 로그인 시 자동 실행됩니다. 드물게 그래도 막히면 한 번 실행하세요:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Hidpify.app
 ```
-
-앱을 처음 여는 것으로 백그라운드 데몬도 설정되며, 이후 매 로그인 시 자동 실행됩니다. (macOS 15 Sequoia에서는 예전의 "우클릭 → 열기" 우회가 더 이상 통하지 않습니다.)
 
 **CLI만** — 아래 중 아무거나:
 
@@ -51,10 +49,12 @@ CLI/데몬 바이너리를 **맨 `cp`로 설치하지 마세요.** `install.sh`�
 ### 업데이트
 
 ```sh
-brew update && brew upgrade   # CLI·앱을 포함해 Homebrew 전체 업데이트
+brew update
+brew upgrade raeseoklee/tap/hidpify          # CLI/데몬 (formula)
+brew upgrade --cask raeseoklee/tap/hidpify   # 메뉴바 앱
 ```
 
-formula(CLI/데몬)와 cask(앱) 모두 인자 없는 `brew upgrade`로 업데이트되며, 업데이트는 실행 중인 데몬을 건드리지 않습니다. `brew`가 최신 릴리스보다 낮은 버전을 보여주면 먼저 `brew update`를 실행하세요 — Homebrew는 탭을 캐시하고 `brew update`(또는 주기적 auto-update) 때만 갱신합니다. 새로 `brew install`하면 항상 최신 버전을 받습니다.
+CLI formula는 인자 없는 `brew upgrade`로도 되지만, **앱 cask는 명시적 `--cask`가 필요**합니다: 격리 해제 설치 훅을 쓰기 때문에(공증 안 된 앱이 "Apple이 악성코드 확인 불가" 경고 없이 열리도록) cask가 "untrusted"로 분류돼 인자 없는 `brew upgrade`는 앱을 건너뜁니다. 업데이트는 실행 중인 데몬을 건드리지 않습니다. `brew`가 최신보다 낮은 버전을 보여주면 먼저 `brew update`를 실행하세요 — Homebrew는 `brew update`(또는 주기적 auto-update) 때만 탭을 갱신하고, 새로 `brew install`하면 항상 최신을 받습니다.
 
 ### 삭제
 
