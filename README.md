@@ -21,13 +21,13 @@ Requires the Swift toolchain (`xcode-select --install`); everything builds from 
 brew install --cask raeseoklee/tap/hidpify
 ```
 
-The cask does its own setup on install: it clears the app's Gatekeeper quarantine flag (the app isn't notarized — it's ad-hoc signed) and registers the daemon to run now and at every login. In the rare case macOS still blocks the app on first launch, run this once:
+Then **open Hidpify once** (from `/Applications`). The app isn't notarized (it's ad-hoc signed), so macOS Gatekeeper blocks the first launch — allow it under **System Settings → Privacy & Security → Open Anyway**, or clear the flag once in Terminal:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Hidpify.app
 ```
 
-(On macOS 15 Sequoia the old right-click → Open trick no longer works; alternatively, double-click the app once, then go to **System Settings → Privacy & Security** and click **Open Anyway**.)
+Opening the app the first time also sets up the background daemon, which then runs at every login. (On macOS 15 Sequoia the old right-click → Open trick no longer works.)
 
 **CLI only** — any of:
 
@@ -51,25 +51,20 @@ Scripts/install-cli.sh          # build + install to ~/.local/bin/hidpify
 ### Updating
 
 ```sh
-brew update                                  # refresh the tap to the latest release
-brew upgrade --cask raeseoklee/tap/hidpify   # update the menu bar app + daemon
-brew upgrade raeseoklee/tap/hidpify          # (CLI-only installs) update the CLI/daemon
+brew update && brew upgrade   # updates the CLI, the app, and the rest of your Homebrew
 ```
 
-Two Homebrew notes for third-party taps like this one:
-
-- If `brew` shows an older version than the latest release, run `brew update` first — Homebrew caches taps and only refreshes them on `brew update` or its periodic auto-update. A fresh `brew install` always fetches the current version.
-- Plain `brew upgrade` (no arguments) **skips** the menu bar app: Homebrew won't auto-run a third-party cask's install hooks (quarantine-clear, daemon registration) unattended. Update the app with the explicit `brew upgrade --cask …` above. The CLI formula upgrades normally with plain `brew upgrade`.
+Both the formula (CLI/daemon) and the cask (app) upgrade with a plain `brew upgrade`, and upgrades never disturb the running daemon. If `brew` shows an older version than the latest release, run `brew update` first — Homebrew caches taps and only refreshes them on `brew update` or its periodic auto-update. A fresh `brew install` always fetches the current version.
 
 ### Uninstalling
 
 ```sh
-brew uninstall --cask raeseoklee/tap/hidpify   # removes the app AND the daemon (LaunchAgent)
-brew uninstall raeseoklee/tap/hidpify          # removes the CLI/daemon binary
-brew uninstall --cask --zap raeseoklee/tap/hidpify   # also deletes ~/.config/hidpify and logs
+brew uninstall --cask raeseoklee/tap/hidpify         # removes the app (leaves the daemon)
+brew uninstall --zap --cask raeseoklee/tap/hidpify   # also removes the daemon, config, and logs
+brew uninstall raeseoklee/tap/hidpify                # removes the CLI/daemon binary
 ```
 
-The cask's uninstall removes the LaunchAgent and stops the daemon, so nothing keeps running afterward. (For a CLI-only install, run `hidpify uninstall-agent` first, then `brew uninstall`.)
+The daemon is intentionally decoupled from the app (so upgrades never disturb it), so a plain cask uninstall leaves it running. To remove the daemon too, use `--zap` above, or run `hidpify uninstall-agent`.
 
 ## Commands
 

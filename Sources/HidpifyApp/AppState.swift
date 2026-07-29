@@ -17,6 +17,13 @@ final class AppState: ObservableObject {
 
     init() {
         refresh()
+        // Self-heal: if HiDPI is configured but the LaunchAgent has gone missing
+        // (e.g. removed by an external `brew` operation), reinstall it so the
+        // daemon comes back. Only acts when HiDPI targets exist and a standalone
+        // `hidpify` binary is available to run.
+        if !config.targets.isEmpty, !daemonInstalled, daemonBinaryPathForInstall() != nil {
+            ensureDaemonRunning()
+        }
         CGDisplayRegisterReconfigurationCallback(
             appStateReconfigurationCallback,
             Unmanaged.passUnretained(self).toOpaque()
@@ -82,10 +89,16 @@ final class AppState: ObservableObject {
             try? ConfigStore.remove(matcher: display.matcher)
         }
 
-        if agentLoaded {
-            LaunchAgentInstaller.kickstart()
+        if enabled {
+            // The user just asked for HiDPI — make sure the daemon is up to apply
+            // it, installing the LaunchAgent if it isn't there yet (self-heal).
+            ensureDaemonRunning()
+        } else {
+            if agentLoaded {
+                LaunchAgentInstaller.kickstart()
+            }
+            refresh()
         }
-        refresh()
     }
 
     /// Updates the persisted looks-like resolution for an already-managed display
@@ -166,6 +179,16 @@ final class AppState: ObservableObject {
     /// 2. Installed but not currently running: bootstraps the existing plist.
     /// 3. Already running: restarts it in place via `kickstart`.
     func startDaemon() {
+        ensureDaemonRunning()
+    }
+
+    /// Ensures the daemon is installed and running: installs the LaunchAgent if
+    /// missing (which also bootstraps it), loads it if installed-but-stopped, or
+    /// kickstarts it to re-apply if already running. Silently no-ops when no
+    /// standalone `hidpify` binary is available (the bundle copy can't run the
+    /// daemon — see `daemonBinaryPathForInstall`). Shared by `startDaemon`, the
+    /// self-heal on launch, and enabling HiDPI.
+    func ensureDaemonRunning() {
         if !daemonInstalled {
             if let binaryPath = daemonBinaryPathForInstall() {
                 try? LaunchAgentInstaller.install(binaryPath: binaryPath)
