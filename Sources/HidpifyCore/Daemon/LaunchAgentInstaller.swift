@@ -69,7 +69,25 @@ public enum LaunchAgentInstaller {
         // Tear down any existing registration first; failure here just means it wasn't loaded.
         _ = runLaunchctl(["bootout", serviceTarget])
 
-        let bootstrapStatus = runLaunchctl(["bootstrap", domainTarget, plistURL.path])
+        // Booting out a *running* daemon returns immediately, but the daemon's
+        // SIGTERM teardown (which detaches virtual displays → a display
+        // reconfiguration burst) can still be in flight; bootstrapping into that
+        // churn fails and leaves NO daemon running. Wait until the old service is
+        // actually gone, then retry the bootstrap a few times, clearing any
+        // partial state between attempts.
+        for _ in 0..<10 {
+            if runLaunchctl(["print", serviceTarget]) != 0 { break }
+            Thread.sleep(forTimeInterval: 0.3)
+        }
+        var bootstrapStatus: Int32 = -1
+        for attempt in 0..<5 {
+            bootstrapStatus = runLaunchctl(["bootstrap", domainTarget, plistURL.path])
+            if bootstrapStatus == 0 { break }
+            if attempt < 4 {
+                Thread.sleep(forTimeInterval: 0.5)
+                _ = runLaunchctl(["bootout", serviceTarget])
+            }
+        }
         guard bootstrapStatus == 0 else {
             throw HiDPIError.launchAgentError("launchctl bootstrap 실패 (exit code \(bootstrapStatus))")
         }

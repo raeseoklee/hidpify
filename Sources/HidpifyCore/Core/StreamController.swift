@@ -26,16 +26,18 @@ public final class StreamSession {
         self.physicalID = physicalID
     }
 
-    /// Whether this stream is still delivering: ScreenCaptureKit hasn't reported
-    /// it stopped (capture error) AND the player window is still on screen. A dead
-    /// stream (a `didStopWithError`, or a window that got closed) reads unhealthy
-    /// so the daemon can tear it down and recreate it instead of leaving a frozen
-    /// black panel (DESIGN.md §9.5). Note: a *static* desktop legitimately sends
-    /// no new frames (ScreenCaptureKit is change-driven), so frame arrival is
-    /// deliberately NOT used as a liveness signal — only an explicit stop is.
-    /// Reads `NSWindow.isVisible`; call on the main thread.
+    /// Whether this stream is still delivering. The signal is deliberately just
+    /// "ScreenCaptureKit has not reported the stream stopped" — a single, stable,
+    /// definitive death signal (`didStopWithError`). We do NOT fold in
+    /// `NSWindow.isVisible` (it can read false transiently for the off-screen
+    /// "island" player window — e.g. during a Spaces change — which made the
+    /// daemon's health check tear the stream down and recreate it every few
+    /// seconds: visible flapping) nor frame arrival (a static desktop legitimately
+    /// sends no frames — ScreenCaptureKit is change-driven). A dead stream reads
+    /// unhealthy so the daemon recreates it instead of leaving a frozen black
+    /// panel (DESIGN.md §9.5). Thread-safe (only reads the lock-guarded flag).
     public var isHealthy: Bool {
-        !output.isStopped && window.isVisible
+        !output.isStopped
     }
 
     /// Repositions/resizes the player window to fully cover the physical panel at

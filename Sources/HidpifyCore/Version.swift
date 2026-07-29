@@ -2,5 +2,5 @@
 /// app, and (via Scripts/make-app.sh) the app bundle's Info.plist. Keep this in
 /// sync with the git tag / release version.
 public enum Hidpify {
-    public static let version = "0.1.6"
+    public static let version = "0.1.7"
 }
