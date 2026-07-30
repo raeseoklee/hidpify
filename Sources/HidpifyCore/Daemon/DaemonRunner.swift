@@ -84,6 +84,12 @@ public final class DaemonRunner {
             // not settled yet), reapply's exponential backoff keeps retrying
             // without churning.
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [self] in
+                // Rebuild from a clean slate instead of reconciling session state
+                // that survived sleep. A stale session could make reapply skip the
+                // display or block in a hung `disable`, leaving HiDPI un-applied
+                // after wake (observed). This mirrors a fresh daemon start, which
+                // reliably re-applies after wake.
+                SessionController.shared.forceResetForWake()
                 performReapply()
             }
         }
