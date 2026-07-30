@@ -19,6 +19,9 @@ public final class DaemonRunner {
     fileprivate var debounceWorkItem: DispatchWorkItem?
     fileprivate var retryWorkItem: DispatchWorkItem?
     fileprivate var healthCheckTimer: DispatchSourceTimer?
+    /// When this daemon process started — used to ignore a `screensDidWake` that
+    /// arrives right after launch, so the wake-triggered self-restart can't loop.
+    fileprivate let startedAt = Date()
 
     public init() {}
 
@@ -78,19 +81,23 @@ public final class DaemonRunner {
             object: nil,
             queue: .main
         ) { [self] _ in
-            logger.info("screensDidWake — scheduling reapply")
-            // Give the displays time to finish coming back before the first
-            // reapply; if the virtual display still can't come online (WindowServer
-            // not settled yet), reapply's exponential backoff keeps retrying
-            // without churning.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [self] in
-                // Rebuild from a clean slate instead of reconciling session state
-                // that survived sleep. A stale session could make reapply skip the
-                // display or block in a hung `disable`, leaving HiDPI un-applied
-                // after wake (observed). This mirrors a fresh daemon start, which
-                // reliably re-applies after wake.
-                SessionController.shared.forceResetForWake()
-                performReapply()
+            // A CGVirtualDisplay created by THIS long-running process fails to
+            // register in CGGetOnlineDisplayList after sleep/wake — the process's
+            // WindowServer/CoreGraphics connection goes stale, so `enable` keeps
+            // timing out in `waitUntilOnline` and HiDPI never comes back (observed
+            // in the log: "created virtual display N" → "did not appear in
+            // CGGetOnlineDisplayList within timeout"). A *freshly started* process
+            // creates displays that online fine. So on wake we don't re-apply in
+            // process — we exit and let launchd (KeepAlive) restart us with a fresh
+            // connection, which reliably re-applies HiDPI. The startup guard stops
+            // a wake notification arriving right after launch from looping restarts.
+            guard Date().timeIntervalSince(startedAt) > 15 else {
+                logger.info("screensDidWake ignored — daemon just started")
+                return
+            }
+            logger.info("screensDidWake — restarting for a fresh graphics connection")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                exit(0)
             }
         }
 
