@@ -350,21 +350,6 @@ public final class SessionController {
         }
     }
 
-    /// Clears all session bookkeeping WITHOUT the mirror/mode/origin teardown that
-    /// `disable` does. Used on wake: after sleep the virtual displays are already
-    /// gone, and running `disable`'s CG calls (stopMirroring / setMode /
-    /// setOrigins) against that stale post-wake display state can block — a hung
-    /// `disable` inside `reapply` leaves the daemon alive but never re-applying
-    /// HiDPI (the exact "didn't recover after wake" symptom). Dropping the
-    /// sessions lets each `VirtualDisplayHandle` deinit (detaching any lingering
-    /// virtual) and clears backoff, so the next `reapply` rebuilds from a clean
-    /// slate — the same state a freshly started daemon is in, which is the path
-    /// that reliably re-applies after wake.
-    public func forceResetForWake() {
-        sessions.removeAll()
-        enableBackoff.removeAll()
-    }
-
     /// Idempotent, never throws. Applies each target that isn't already up.
     ///
     /// On failure it does NOT immediately retry: right after wake, creating a

@@ -73,8 +73,14 @@ public final class DaemonRunner {
             object: nil,
             queue: .main
         ) { [logger] _ in
-            logger.info("screensDidSleep — disabling all sessions")
-            SessionController.shared.disableAll()
+            // Deliberately do NOT tear down here. Destroying the virtual display /
+            // stopping the mirror triggers a display reconfiguration that
+            // immediately wakes the just-slept panel (observed: screensDidSleep →
+            // ~0.5s later screensDidWake, before disableAll even finished), so the
+            // mirrored display never stays asleep — it bounces back on and shows
+            // the desktop. The wake handler already restarts the daemon with a
+            // fresh graphics connection to rebuild, so no teardown is needed here.
+            logger.info("screensDidSleep — leaving sessions intact (wake will rebuild)")
         }
         notificationCenter.addObserver(
             forName: NSWorkspace.screensDidWakeNotification,
