@@ -13,7 +13,7 @@ macOS에서 HiDPI 모드를 제공하지 않는 외장 모니터에 HiDPI 렌더
 
 ## 빌드 · 설치
 
-Swift 툴체인 필요(`xcode-select --install`); 모두 소스에서 빌드됩니다.
+Homebrew 설치에는 툴체인이 필요 없습니다 — 프리빌트 유니버설(애플 실리콘 + 인텔) 바이너리를 받습니다. Swift 툴체인(`xcode-select --install`)은 직접 소스에서 빌드할 때만 필요합니다.
 
 **메뉴바 앱 + CLI (권장)** — 한 명령으로 Hidpify 메뉴바 앱과 그 앱이 의존하는 CLI/데몬을 함께 설치합니다:
 

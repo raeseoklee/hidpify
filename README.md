@@ -13,7 +13,7 @@ A CLI + resident daemon that forces HiDPI rendering onto external monitors on ma
 
 ## Build & Install
 
-Requires the Swift toolchain (`xcode-select --install`); everything builds from source.
+Installing via Homebrew needs no toolchain — it ships a prebuilt universal (Apple Silicon + Intel) binary. The Swift toolchain (`xcode-select --install`) is only needed if you build from source yourself.
 
 **Menu bar app + CLI (recommended)** — one command installs the Hidpify menu bar app *and* the CLI/daemon it depends on:
 
